@@ -1,0 +1,12 @@
+{
+    "port": 8012,
+    "http": 8014,
+
+    "dbPoolSettings" : {
+        "host" : "localhost",
+        "user" : "naweddiwan",
+        "password" : "D@123iwan",
+        "database" : "school",
+        "connectionLimit" :10
+    }
+}
