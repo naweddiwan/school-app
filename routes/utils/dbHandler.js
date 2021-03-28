@@ -1,55 +1,42 @@
-const mysql     = require('mysql');
-const Promise   = require('bluebird');
-const moment    = require('moment');
+const mysql     = require('mysql2');
 const config    = require('config');
+const Promise   = require('bluebird');
+
+exports.dbClient = dbClient;
+
+let dbConnectionsPool;
 
 const dbPoolConfig = {
-    host: config.get('dbPoolSettings.host'),
-    user: config.get('dbPoolSettings.user'),
-    password: config.get('dbPoolSettings.password'),
-    database: config.get('dbPoolSettings.database'),
-    connectionLimit: config.get('dbPoolSettings.connectionLimit'),
-    charset : "utf8mb4"
+    host:               config.get('dbPoolSettings.host'),
+    user:               config.get('dbPoolSettings.user'),
+    password:           config.get('dbPoolSettings.password'),
+    database:           config.get('dbPoolSettings.database'),
+    connectionLimit:    config.get('dbPoolSettings.connectionLimit')
 };
 
-
-let numConnectionsInPool = 0;
-
-function initializePool(dbPoolConfig) {
-    
-    console.log('CALLING INITIALIZE POOL');
+function initializePool(dbPoolConfig) { 
+    console.log('::::::::::::::: CREATING DB CONNECTION POOL');
     console.log('');
-    let dbConnectionsPool = mysql.createPool(dbPoolConfig);
-
-    dbConnectionsPool.on('connection',  (connection) => {
-        numConnectionsInPool++;
-        console.log('NUMBER OF CONNECTION IN POOL : ' + numConnectionsInPool);
-    });
-    return dbConnectionsPool;
+    dbConnectionsPool = mysql.createPool(dbPoolConfig);
+    console.log('::::::::::::::: SUCCESS DB POOL CONNECTION ');
 }
-const dbConnections = initializePool(dbPoolConfig);
 
+initializePool(dbPoolConfig);
 
-const dbHandlerClient = {
-    executeQuery :  (queryObj) => {
-        return new Promise((resolve, reject) => {
-            dbConnections.query(queryObj.query, queryObj.args, (err, result) => {
-                console.log(":::QUERY::: ", queryObj.query);
-                if(err ){
-                    if(err.code === 'ER_LOCK_DEADLOCK' || err.code === 'ER_QUERY_INTERRUPTED'){
-                        return setTimeout(() => {
-                            dbHandlerClient.executeQuery(handlerInfo, queryObj);
-                        }, 50);
-                    }
-                    return reject(err);
-                }
-                console.log(":::QUERY RESULT::: ", result);
-                return resolve(result);
-            });
+async function dbClient(query, values) {
+    return new Promise((resolve, reject) => {
+        let finalQuery = dbConnectionsPool.query(query, values, function (error, result, fields) {
+            if (error) {
+                return reject(error);
+            }
+            console.log('');
+            console.log("::::::::::QUERY::::::::::");
+            console.log(finalQuery.sql);
+            console.log('');
+            console.log('::::::QUERY RESULT:::::::');
+            console.log(result);
+            console.log('');
+            return resolve(result);
         });
-    }
+    });
 }
-
-module.exports.dbClient = (function (){
-    return dbHandlerClient;
-})();

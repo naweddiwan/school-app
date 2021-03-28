@@ -1,7 +1,7 @@
 const express         = require('express');
 const app             = express.Router();
 
-const teachers        = require('./teachers');
+const teachers        = require('./registration');
 
 
 app.use(function(req, res, next) {

@@ -3,8 +3,8 @@
     "http": 8014,
 
     "dbPoolSettings" : {
-        "host" : "localhost",
-        "user" : "naweddiwan",
+        "host" : "15.207.19.210",
+        "user" : "dev",
         "password" : "D@123iwan",
         "database" : "db_school",
         "connectionLimit" :10

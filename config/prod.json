@@ -4,7 +4,7 @@
 
     "dbPoolSettings" : {
         "host" : "localhost",
-        "user" : "naweddiwan",
+        "user" : "prod",
         "password" : "D@123iwan",
         "database" : "db_school",
         "connectionLimit" :10
