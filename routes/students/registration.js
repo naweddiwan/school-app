@@ -1,11 +1,24 @@
+const MODULE_NAME = 'studentRegistration';
+
 const Joi       = require('joi');
 
 const dbClient  = require('../utils/dbHandler').dbClient;
+const constants = require('../utils/constants');
+const logger    = require('../utils/logger');
+const commons   = require('../utils/commonFunctions');
 
 exports.register        = register;
 
 async function register(req, res) {
-    console.log({REQUEST: req.body});
+
+    const recieverInfo = {
+        baseModule          : MODULE_NAME,
+        currentModule       : MODULE_NAME,
+        baseApi             : '/student/register',
+        currentProcessor    : 'register',
+        level               : 0
+    };
+    await logger.track(recieverInfo, {REQUEST: req.body});
     const opts = req.body;
 
     const schema = Joi.object().keys({
@@ -32,31 +45,48 @@ async function register(req, res) {
         prev_school         : Joi.string().required(),
         gov_id              : Joi.string().required(),
     });
-
-    const result = Joi.validate(opts, schema);
-
-    if(result.error){
-        return res.send({
-            flag: 300,
-            message: 'Failure'
-        }); 
-	} 
-
-    const firstName         = opts.first_name;
-    const lastName          = opts.last_name;
-    const age               = opts.age;
-    const standard          = opts.standard;
-    const address           = opts.address;
-    const fatherName        = opts.father_name;
-    const fatherOccupation  = opts.father_occupation;
-    const motherName        = opts.mother_name;
-    const motherOccupation  = opts.mother_occupation;
-    const contactNo         = opts.contact_no;
-    const altContactNo      = opts.all_contact_no;
-    const prevSchool        = opts.prev_school;
-    const govId             = opts.gov_id;
-    const photo             = opts.photo;
-
     
+    // const result = Joi.validate(opts, schema);
 
+    // if(result.error){
+    //     return res.send(constants.responses.PARAMS_MISSING); 
+	// } 
+
+    // const firstName         = opts.first_name;
+    // const lastName          = opts.last_name;
+    // const age               = opts.age;
+    // const prevStandard      = opts.prev_standard;
+    // const currentStandard   = opts.current_standard;
+
+    // const address           = opts.address;
+    // const district          = opts.district;
+    // const state             = opts.state;
+    // const country           = opts.country;
+    // const pincode           = opts.pincode;
+
+    // const fatherName        = opts.father_name;
+    // const fatherOccupation  = opts.father_occupation;
+    // const motherName        = opts.mother_name;
+    // const motherOccupation  = opts.mother_occupation;
+
+    // const contactNo         = opts.contact_no;
+    // const altContactNo      = opts.all_contact_no;
+
+    // const prevSchool        = opts.prev_school;
+    // const govId             = opts.gov_id;
+    try{
+        let queryObj = {
+            table_name      : 'tb_students',
+            required_keys   : ['*'],
+            constraints     : [['first_name', 'nawed3']]
+        };
+        let currentStudents = await commons.fetchData(recieverInfo, queryObj);
+        let response = constants.responses.SUCCESS;
+        response.data = currentStudents;
+        await logger.track(recieverInfo, {RESPONSE_SENT: response});
+        return res.send(response);
+    }catch(error){
+        await logger.error(recieverInfo, {ERROR: error.stack});
+        return res.send(constants.responses.FALIURE);
+    }
 }

@@ -3,7 +3,7 @@ const app             = express.Router();
 
 const registration        = require('./registration');
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 
     (req.headers['access-control-request-headers'] ? req.headers['access-control-request-headers'] : 'Content-Type'));

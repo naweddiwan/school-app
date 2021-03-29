@@ -8,5 +8,12 @@
         "password" : "D@123iwan",
         "database" : "db_school",
         "connectionLimit" :10
+    },
+    "dbLoggingPoolSetting" : {
+        "host" : "localhost",
+        "user" : "naweddiwan",
+        "password" : "D@123iwan",
+        "database" : "db_logging",
+        "connectionLimit" :10
     }
 }

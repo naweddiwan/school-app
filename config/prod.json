@@ -4,9 +4,16 @@
 
     "dbPoolSettings" : {
         "host" : "localhost",
-        "user" : "prod",
+        "user" : "root",
         "password" : "D@123iwan",
         "database" : "db_school",
+        "connectionLimit" :10
+    },
+    "dbLoggingPoolSetting" : {
+        "host" : "localhost",
+        "user" : "root",
+        "password" : "D@123iwan",
+        "database" : "db_logging",
         "connectionLimit" :10
     }
 }
